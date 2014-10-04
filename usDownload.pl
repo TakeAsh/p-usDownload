@@ -60,9 +60,10 @@ for(my $i=0; $i<@items; ++$i){
 	my $fileName = "${guid}_$title.$type";
 	my $req = HTTP::Request->new(GET => $url);
 	my($status, $size, $total) = saveFile($req, "$path/$title.$type");
+	my $percent = $total != 0 ? sprintf("%.1f" ,$size / $total * 100) : '-';
 	printf(
-		"%d\t%d\t%s\t%s\t%s\t%s\t%s\t%d\t%d\t%.1f\n",
-		$i+1, scalar(@items), $guid, $title, $type, $url, $status, $size, $total, $size / $total * 100
+		"%d\t%d\t%s\t%s\t%s\t%s\t%s\t%d\t%d\t%s\n",
+		$i+1, scalar(@items), $guid, $title, $type, $url, $status, $size, $total, $percent
 	);
 }
 
