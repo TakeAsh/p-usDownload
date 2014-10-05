@@ -8,6 +8,7 @@ use XML::RSS;
 use LWP::UserAgent;
 use HTTP::Request;
 use YAML::Syck;
+use Log::Dispatch;
 
 $YAML::Syck::ImplicitUnicode = 1;
 $YAML::Syck::ImplicitTyping  = 1;
@@ -57,8 +58,17 @@ sub getChannel {
     print $fhRss $rssXml;
     close($fhRss);
 
-    open( my $fhLog, '>:utf8', "$channel/$channel.$logExt" )
-        or die("$channel.$logExt: $!\n");
+    my $log = Log::Dispatch->new(
+        outputs => [
+            [   'File',
+                min_level   => 'debug',
+                filename    => "$channel/$channel.$logExt",
+                binmode     => ":utf8",
+                permissions => 0666,
+                newline     => 1,
+            ],
+        ],
+    );
 
     my $rss = XML::RSS->new;
     $rss->parse($rssXml);
@@ -79,24 +89,12 @@ sub getChannel {
             = $total != 0
             ? sprintf( "%.1f", $size / $total * 100 )
             : '-';
-        printf $fhLog (
-            "No:%d\tItems:%d\tguid:%s\tTitle:%s\t"
-                . "Type:%s\tURL:%s\tStatus:%s\tSize:%d\t"
-                . "Total:%d\tPercent:%s\n",
-            $i + 1,
-            scalar(@items),
-            $guid,
-            $title,
-            $type,
-            $url,
-            $status,
-            $size,
-            $total,
-            $percent
+        $log->info(
+            "No:" . ( $i + 1 ) . "\tItems:" . scalar(@items),
+            "\tguid:$guid\tTitle:$title\tType:$type\tURL:$url\t",
+            "Status:$status\tSize:$size\tTotal:$total\tPercent:$percent"
         );
     }
-
-    close($fhLog);
 }
 
 sub saveFile {
