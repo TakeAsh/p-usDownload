@@ -83,7 +83,7 @@ sub saveFile {
 		my $res = $ua->request($req, $filename);
 		$size = -s $filename || 0;
 		$total = $res->header('Content-Length') || 0;
-		if (++$retry <= 5 && $size < $total){
+		if (++$retry <= 10 && $size < $total){
 			sleep(30);
 		} else {
 			last;
