@@ -1,3 +1,6 @@
 username: your_name
 password: your_password
-channel: your_channel
+channels:
+  - your_channel1
+  - your_channel2
+  - your_channelN
