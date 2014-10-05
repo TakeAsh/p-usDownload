@@ -9,6 +9,7 @@ use LWP::UserAgent;
 use HTTP::Request;
 use YAML::Syck;
 use Log::Dispatch;
+use String::Util qw(trim);
 
 $YAML::Syck::ImplicitUnicode = 1;
 $YAML::Syck::ImplicitTyping  = 1;
@@ -76,7 +77,7 @@ sub getChannel {
     for ( my $i = 0; $i < @items; ++$i ) {
         my $item  = $items[$i];
         my $guid  = $item->{'guid'};
-        my $title = $item->{'title'};
+        my $title = trim( $item->{'title'} );
         my $type  = $item->{'enclosure'}{'type'};
         my $url   = $item->{'enclosure'}{'url'};
         $guid =~ s/^.+\/(\w+)$/$1/;
