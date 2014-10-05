@@ -12,6 +12,13 @@ use YAML::Syck;
 $YAML::Syck::ImplicitUnicode = 1;
 $YAML::Syck::ImplicitTyping = 1;
 
+my $charsetConsole = 'UTF-8';
+my $charsetFile = 'UTF-8';
+
+binmode(STDIN,  ":encoding($charsetConsole)");
+binmode(STDOUT, ":encoding($charsetConsole)");
+binmode(STDERR, ":encoding($charsetConsole)");
+
 my $configFile = $ARGV[0] or die($ARGV[0]);#|| 'config.yml';
 my $authUrl1 = 'https://www.ustream.tv/channel/';
 my $authUrl2 = '/0/video/download.rss';
@@ -59,7 +66,7 @@ for(my $i=0; $i<@items; ++$i){
 	$type =~ s/^.+?([A-Za-z0-9]+)$/$1/;
 	my $fileName = "${guid}_$title.$type";
 	my $req = HTTP::Request->new(GET => $url);
-	my($status, $size, $total) = saveFile($req, "$path/$title.$type");
+	my($status, $size, $total) = saveFile($req, "$path/$fileName");
 	my $percent = $total != 0 ? sprintf("%.1f" ,$size / $total * 100) : '-';
 	printf(
 		"%d\t%d\t%s\t%s\t%s\t%s\t%s\t%d\t%d\t%s\n",
